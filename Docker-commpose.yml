@@ -1,0 +1,8 @@
+version: '3'
+services:
+  any_videos_to_h265:
+    container_name: avth
+    volumes:
+      - /e/pikpak/straplessdildo系列:/data
+    restart: unless-stopped
+    image: zhangyiming748/any_videos_to_h265:latest
