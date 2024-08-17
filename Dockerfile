@@ -3,9 +3,9 @@ LABEL authors="zen"
 RUN mkdir /App
 WORKDIR /app
 COPY . .
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors4.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
+# RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors4.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 RUN go env -w GO111MODULE=on
-RUN go env -w GOPROXY=https://goproxy.cn,direct
+# RUN go env -w GOPROXY=https://goproxy.cn,direct
 RUN apk add ffmpeg build-base mediainfo
 RUN go mod tidy
 RUN go mod vendor
