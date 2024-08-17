@@ -35,10 +35,11 @@ func GetVideoFile(s *[]string) []string {
 			if IsVideo(path) {
 				//println(p.Video.CodecID) //hvc1
 				//println(p.Video.Format)  //HEVC
-				if GetNotH265ByMediainfo(path) && GetNotH265ByFfprob(path) {
-					fmt.Printf("跳过HEVC的视频: %v\n", path)
+				if GetNotH265ByMediainfo(path) || GetNotH265ByFfprob(path) {
+					nonSatisfyingVideos = append(nonSatisfyingVideos, path)
 					//satisfyingVideos = append(satisfyingVideos, path)
 				} else {
+					fmt.Printf("跳过HEVC的视频: %v\n", path)
 					//fmt.Printf("不是HEVC的视频: %v\n", path)
 					nonSatisfyingVideos = append(nonSatisfyingVideos, path)
 				}
@@ -69,6 +70,7 @@ func GetNotH265ByMediainfo(path string) bool {
 */
 func GetNotH265ByFfprob(path string) bool {
 	cmd := exec.Command("ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=codec_name", "-of", "default=noprint_wrappers=1:nokey=1", path)
+	// ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "/mnt/e/video/Straplez/vp9/Laptop Light No Camera Plenty of Action 712752695.mp4"
 	if output, _ := cmd.CombinedOutput(); string(output) == "hevc" {
 		return false
 	} else {

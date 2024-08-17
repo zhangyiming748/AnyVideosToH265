@@ -18,7 +18,7 @@ func ProcessVideo2H265(fp string) {
 		log.Println("跳过已经转码的视频")
 		return
 	}
-	mp4 := strings.Replace(fp, filepath.Ext(fp), "hevc.mp4", 1)
+	mp4 := strings.Replace(fp, filepath.Ext(fp), "_hevc.mp4", 1)
 	cmd := exec.Command("ffmpeg", "-i", fp, "-c:v", "libx265", "-tag:v", "hvc1",
 		"-ac", "1", "-map_chapters", "-1", mp4)
 	if runtime.GOOS == "linux" && runtime.GOARCH == "arm64" {
