@@ -12,6 +12,9 @@ import (
 )
 
 func ProcessVideo2H265(fp string) {
+	if strings.HasSuffix(fp, "_hevc.mp4") {
+		return
+	}
 	mi := FastMediaInfo.GetStandMediaInfo(fp)
 	FrameCount := mi.Video.FrameCount
 	if mi.Video.CodecID == "hvc1" || mi.Video.CodecID == "vp09" {
