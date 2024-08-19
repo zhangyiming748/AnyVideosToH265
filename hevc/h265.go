@@ -25,7 +25,7 @@ func ProcessVideo2H265(fp string) {
 	cmd := exec.Command("ffmpeg", "-i", fp, "-c:v", "libx265", "-tag:v", "hvc1",
 		"-ac", "1", "-map_chapters", "-1", mp4)
 	if runtime.GOOS == "linux" && runtime.GOARCH == "arm64" {
-		cmd = exec.Command("ffmpeg", "-i", fp, "-threads", "1", "-c:v", "libx265", "-tag:v", "hvc1", "-ac", "1", "-map_chapters", "-1", "-threads", "1", mp4)
+		cmd = exec.Command("ffmpeg", "-i", fp, "-threads", "1", "-c:v", "libx265", "-tag:v", "hvc1", "-c:a", "libopus", "-ac", "1", "-map_chapters", "-1", "-threads", "1", mp4)
 	}
 	log.Printf("生成的命令:%v\n", cmd.String())
 	if err := util.ExecCommand(cmd, FrameCount); err != nil {
