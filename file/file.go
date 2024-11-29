@@ -2,27 +2,37 @@ package file
 
 import (
 	"fmt"
-	"github.com/h2non/filetype"
-	"github.com/zhangyiming748/FastMediaInfo"
+	"log"
 	"os"
 	"os/exec"
-	"strings"
+	"path/filepath"
+
+	"github.com/h2non/filetype"
+	"github.com/zhangyiming748/FastMediaInfo"
 )
 
-/*
-使用find获取目录下全部文件
-*/
-func GetAllFile(root string) *[]string {
-	//root := "/mnt/e/video"
-	cmd := exec.Command("find", root, "-type", "f")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		//fmt.Println(err)
-	} else {
-		//fmt.Println(string(output))
-	}
-	paths := strings.Split(string(output), "\n")
-	return &paths
+func GetAllVideoFilesInDirNotHEVC(dir string) ([]string, error) {
+	var files []string
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		// 判断是否是文件，如果是文件则将其绝对路径添加到files切片中
+		if !info.IsDir() {
+			if IsVideo(path) {
+				mi := FastMediaInfo.GetStandMediaInfo(path)
+				if mi.Video.Format == "HEVC" {
+					log.Printf("跳过已经是h265的视频:%v\n", path)
+				} else {
+					files = append(files, path)
+				}
+
+			}
+
+		}
+		return nil
+	})
+	return files, err
 }
 
 /*
@@ -35,7 +45,7 @@ func GetVideoFile(s *[]string) []string {
 			if IsVideo(path) {
 				//println(p.Video.CodecID) //hvc1
 				//println(p.Video.Format)  //HEVC
-				if GetNotH265ByMediainfo(path) || GetNotH265ByFfprob(path) {
+				if GetNotH265ByMediainfo(path) {
 					nonSatisfyingVideos = append(nonSatisfyingVideos, path)
 					//satisfyingVideos = append(satisfyingVideos, path)
 				} else {
