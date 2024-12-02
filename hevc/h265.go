@@ -2,6 +2,7 @@ package hevc
 
 import (
 	"AnyVideosToH265/util"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -23,10 +24,16 @@ func ProcessVideo2H265(fp string) {
 	// 	return
 	// }
 	mp4 := strings.Replace(fp, filepath.Ext(fp), "_hevc.mp4", 1)
-	cmd := exec.Command("ffmpeg", "-i", fp, "-c:v", "libx265", "-tag:v", "hvc1",
+	//"-strict" ,"-2" ,"-vf" ,"scale=-1:1080",
+	cmd := exec.Command("ffmpeg", "-i", fp, "-strict", "-2", "-vf", "scale=-1:1080", "-c:v", "libx265", "-tag:v", "hvc1",
 		"-ac", "1", "-map_chapters", "-1", mp4)
 	if runtime.GOOS == "linux" && runtime.GOARCH == "arm64" {
-		cmd = exec.Command("ffmpeg", "-i", fp, "-threads", "1", "-c:v", "libx265", "-tag:v", "hvc1", "-c:a", "libopus", "-ac", "1", "-map_chapters", "-1", "-threads", "1", mp4)
+		cmd = exec.Command("ffmpeg", "-i", fp, "-strict", "-2", "-vf", "scale=-1:1080", "-threads", "1", "-c:v", "libx265", "-tag:v", "hvc1", "-c:a", "libopus", "-ac", "1", "-map_chapters", "-1", "-threads", "1", mp4)
+	}
+	if hostname, _ := os.Hostname(); hostname == "DESKTOP-VGFTVD8" {
+		fmt.Println("是神舟战神,可以使用cuda加速")
+		cmd = exec.Command("ffmpeg", "-i", fp, "-strict", "-2", "-vf", "scale=-1:1080", "-c:v", "h264_nvenc", "-tag:v", "hvc1",
+			"-ac", "1", "-map_chapters", "-1", mp4)
 	}
 	log.Printf("生成的命令:%v\n", cmd.String())
 	if err := util.ExecCommand(cmd, FrameCount); err != nil {

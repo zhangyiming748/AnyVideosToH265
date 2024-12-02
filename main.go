@@ -13,7 +13,7 @@ func init() {
 	log.SetLog()
 }
 func main() {
-	root := "F:\\分割完成\\淫语"
+	root := "E:\\Downloads\\My Pack\\YeYebirdie\\BBC EP05"
 	files, _ := file.GetAllVideoFilesInDirNotHEVC(root)
 	util.WriteByLine("notH265.txt", files)
 	for i := 9; i > 0; i-- {
